@@ -1,25 +1,11 @@
 const http = require("http");
 const fs = require("fs");
-
-fs.readFile("home.html", (err, home) => {
-  console.log(home.toString());
-});
-
-fs.readFile("home.html", (err, home) => {
-  if (err) {
-    throw err;
-  }
-  http
-    .createServer((request, response) => {
-      response.writeHeader(200, { "Content-Type": "text/html" });
-      response.write(home);
-      response.end();
-    })
-    .listen(3000);
-});
+const args = require("minimist")(process.argv.slice(2));
+//comment the above line line to test locally
 
 let homeContent = "";
 let projectContent = "";
+let registrationContent = "";
 
 fs.readFile("home.html", (err, home) => {
   if (err) {
@@ -35,6 +21,13 @@ fs.readFile("project.html", (err, project) => {
   projectContent = project;
 });
 
+fs.readFile("registration.html", (err, registration) => {
+  if (err) {
+    throw err;
+  }
+  registrationContent = registration;
+});
+
 http
   .createServer((request, response) => {
     let url = request.url;
@@ -44,10 +37,20 @@ http
         response.write(projectContent);
         response.end();
         break;
+      case "/registration":
+        response.write(registrationContent);
+        response.end();
+        break;
+      case "/style":
+        response.write(registrationStyle);
+        response.end();
+        break;
       default:
         response.write(homeContent);
         response.end();
         break;
     }
   })
-  .listen(3000);
+  .listen(args.port);
+//comment the above line and uncomment the below line to test locally
+//}).listen(3000);
